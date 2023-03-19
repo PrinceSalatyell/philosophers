@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: josanton <josanton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 03:23:18 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/19 07:43:39 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:46:47 by josanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ t_philo	*philos(void)
 
 	if (!philos)
 		philos = malloc(sizeof(t_philo) * simulation()->qty);
-
 	return (philos);
 }
 
@@ -42,4 +41,18 @@ void	cleanup(void)
 		free(simulation()->forks);
 	if (philos())
 		free(philos());
+}
+
+bool	do_one(void)
+{
+	long long	time;
+
+	time = get_time() - simulation()->start;
+	if (simulation()->qty != 1)
+		return (false);
+	printf("%s[%lld ms] 1 has taken first fork%s\n", PURPLE, time, COLOUR_END);
+	ft_sleep(1, false, true);
+	time = get_time() - simulation()->start;
+	printf("%s[%lld ms] %i is dead%s\n", RED, time, 1, COLOUR_END);
+	return (true);
 }

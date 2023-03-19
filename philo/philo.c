@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: josanton <josanton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/07 22:54:39 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/19 07:43:31 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:55:18 by josanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,22 @@ void	*routine(void *arg)
 	int	id;
 
 	id = *(int *)arg;
+	if (do_one())
+		return (NULL);
+	if (id % 2 == 0)
+		usleep(1500);
 	pthread_mutex_lock(&simulation()->time_mutex);
 	philos()[id - 1].last_meal = get_time();
 	pthread_mutex_unlock(&simulation()->time_mutex);
 	while (true)
 	{
-		if (!all_alive())
+		if (!all_alive(-1))
 			break ;
 		if (eat(id))
 		{
 			if (is_alive(id - 1))
 			{
-				ft_sleep(id, false);
+				ft_sleep(id, false, false);
 				print_message("is thinking", id, YELLOW);
 			}
 		}
@@ -44,6 +48,7 @@ void	start(void)
 	i = -1;
 	qty = simulation()->qty;
 	simulation()->ensure_must_eat = simulation()->qty;
+	simulation()->all_alive = true;
 	while (++i < qty)
 	{
 		philos()[i].is_alive = true;
@@ -64,12 +69,13 @@ void	init(int i)
 	pthread_mutex_init(&simulation()->print_mutex, NULL);
 	pthread_mutex_init(&simulation()->time_mutex, NULL);
 	while (++i < simulation()->qty)
+		pthread_mutex_init(&simulation()->forks[i], NULL);
+	i = -1;
+	while (++i < simulation()->qty)
 	{
 		if (pthread_create(&philos()[i].philosopher, \
 		NULL, routine, &philos()[i].id))
 			return ;
-		else
-			pthread_mutex_init(&simulation()->forks[i], NULL);
 	}
 	i = -1;
 	while (++i < simulation()->qty)

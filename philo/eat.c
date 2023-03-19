@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   eat.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: josanton <josanton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 05:07:29 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/19 07:43:37 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:41:32 by josanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	eating(int id)
 	philos()[id - 1].last_meal = get_time();
 	pthread_mutex_unlock(&simulation()->time_mutex);
 	print_message("is eating", id, GREEN);
-	ft_sleep(id, true);
+	ft_sleep(id, true, false);
 	if (++philos()[id - 1].times_ate == simulation()->n_times)
 	{
 		pthread_mutex_lock(&simulation()->time_mutex);
@@ -29,30 +29,23 @@ static void	eating(int id)
 
 void	which_fork(int id, int *first_fork, int *second_fork)
 {
-	int	tmp;
-
-	if (id % 2 == 0)
+	if (id != 1)
 	{
-		*first_fork = (id - 2 + simulation()->qty) % simulation()->qty;
-		*second_fork = id - 1;
+		if (id % 2 != 0)
+		{
+			*first_fork = (id - 2 + simulation()->qty) % simulation()->qty;
+			*second_fork = id - 1;
+		}
+		else
+		{
+			*first_fork = id - 1;
+			*second_fork = (id - 2 + simulation()->qty) % simulation()->qty;
+		}
 	}
 	else
 	{
-		*first_fork = id - 1;
-		*second_fork = (id % simulation()->qty);
-	}
-
-	if (id == 1)
-	{
 		*first_fork = simulation()->qty - 1;
 		*second_fork = 0;
-	}
-
-	if (*first_fork > *second_fork)
-	{
-		tmp = *first_fork;
-		*first_fork = *second_fork;
-		*second_fork = tmp;
 	}
 }
 

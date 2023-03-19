@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: josanton <josanton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/07 22:54:48 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/19 07:43:44 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:55:05 by josanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_simulation
 	long long		time_to_eat;
 	int				n_times;
 	int				ensure_must_eat;
+	bool			all_alive;
 	pthread_mutex_t	death;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	time_mutex;
@@ -67,9 +68,10 @@ long long		get_time(void);
 void			print_message(char *message, int id, char *color);
 void			cleanup(void);
 void			death(int id);
-bool			all_alive(void);
+bool			all_alive(int i);
 bool			is_alive(int i);
-int				ft_sleep(int id, bool to_eat);
+int				ft_sleep(int id, bool to_eat, bool to_die);
 bool			eat(int id);
+bool			do_one(void);
 
 #endif

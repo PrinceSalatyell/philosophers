@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lib.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: josanton <josanton@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 04:23:03 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/19 07:43:41 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:24:12 by josanton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,13 @@ void	print_message(char *message, int id, char *color)
 {
 	long long	time;
 
+	pthread_mutex_lock(&simulation()->print_mutex);
+	if (!simulation()->all_alive)
+	{
+		pthread_mutex_unlock(&simulation()->print_mutex);
+		return ;
+	}
 	time = get_time() - simulation()->start;
 	printf("%s[%lld ms] %i %s%s\n", color, time, id, message, COLOUR_END);
+	pthread_mutex_unlock(&simulation()->print_mutex);
 }
