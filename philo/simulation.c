@@ -6,23 +6,18 @@
 /*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 05:23:32 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/18 17:19:37 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 07:43:42 by salatiel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	is_alive(int id)
+bool	is_alive(int i)
 {
-	if (!philos()[id - 1].is_alive)
+	if (!philos()[i].is_alive)
 		return (false);
-	if (get_time() - philos()[id - 1].last_meal >= simulation()->time_to_die)
-	{
-		pthread_mutex_lock(&simulation()->death);
-		death(id);
-		pthread_mutex_unlock(&simulation()->death);
+	if (get_time() - philos()[i].last_meal >= simulation()->time_to_die)
 		return (false);
-	}
 	return (true);
 }
 
@@ -31,9 +26,20 @@ bool	all_alive(void)
 	int	i;
 
 	i = -1;
+	pthread_mutex_lock(&simulation()->death);
 	while (++i < simulation()->qty)
-		if (!is_alive(i + 1))
+	{
+		if (!philos()[i].is_alive || !is_alive(i))
+		{
+			if (philos()[i].is_alive)
+				death(i + 1);
+			pthread_mutex_unlock(&simulation()->death);
 			return (false);
+		}
+	}
+	pthread_mutex_unlock(&simulation()->death);
+	if (simulation()->n_times && !simulation()->ensure_must_eat)
+		return (false);
 	return (true);
 }
 
@@ -45,18 +51,26 @@ void	death(int id)
 	pthread_mutex_unlock(&simulation()->print_mutex);
 }
 
-int	ft_sleep(int id)
+int	ft_sleep(int id, bool to_eat)
 {
 	long long	start;
 	long long	passed;
+	long long	time_reference;
 
 	start = get_time();
 	passed = 0;
-	while (passed < simulation()->time_to_sleep)
+	if (to_eat)
+		time_reference = simulation()->time_to_eat;
+	else
 	{
-		if (!is_alive(id))
+		time_reference = simulation()->time_to_sleep;
+		print_message("is sleeping", id, BLUE);
+	}
+	while (passed < time_reference)
+	{
+		if (!is_alive(id - 1))
 			return (1);
 		passed = get_time() - start;
 	}
-	return (passed >= simulation()->time_to_sleep);
+	return (passed >= time_reference);
 }

@@ -6,24 +6,32 @@
 /*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/07 22:54:39 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/18 17:14:59 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 07:43:31 by salatiel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*thread_test(void *arg)
+void	*routine(void *arg)
 {
-	int	i;
+	int	id;
 
-	i = *(int *)arg;
-	philos()[i - 1].last_meal = get_time();
+	id = *(int *)arg;
+	pthread_mutex_lock(&simulation()->time_mutex);
+	philos()[id - 1].last_meal = get_time();
+	pthread_mutex_unlock(&simulation()->time_mutex);
 	while (true)
 	{
-		if (all_alive())
-			ft_sleep(i - 1);
-		else
+		if (!all_alive())
 			break ;
+		if (eat(id))
+		{
+			if (is_alive(id - 1))
+			{
+				ft_sleep(id, false);
+				print_message("is thinking", id, YELLOW);
+			}
+		}
 	}
 	return (NULL);
 }
@@ -35,6 +43,7 @@ void	start(void)
 
 	i = -1;
 	qty = simulation()->qty;
+	simulation()->ensure_must_eat = simulation()->qty;
 	while (++i < qty)
 	{
 		philos()[i].is_alive = true;
@@ -53,10 +62,11 @@ void	init(int i)
 	start();
 	pthread_mutex_init(&simulation()->death, NULL);
 	pthread_mutex_init(&simulation()->print_mutex, NULL);
+	pthread_mutex_init(&simulation()->time_mutex, NULL);
 	while (++i < simulation()->qty)
 	{
 		if (pthread_create(&philos()[i].philosopher, \
-		NULL, thread_test, &philos()[i].id))
+		NULL, routine, &philos()[i].id))
 			return ;
 		else
 			pthread_mutex_init(&simulation()->forks[i], NULL);

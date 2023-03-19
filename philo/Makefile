@@ -6,16 +6,17 @@
 #    By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/07 23:04:06 by salatiel          #+#    #+#              #
-#    Updated: 2023/03/15 05:23:23 by salatiel         ###   ########.fr        #
+#    Updated: 2023/03/19 07:43:46 by salatiel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # VARIABLE DECLARATIONS
 
-SRCS	=	philo.c	\
-			utils.c	\
-			lib.c	\
-			simulation.c
+SRCS	=	philo.c			\
+			utils.c			\
+			lib.c			\
+			simulation.c	\
+			eat.c
 
 OBJS	=	${SRCS:%.c=${DIR_OBJ}%.o}
 

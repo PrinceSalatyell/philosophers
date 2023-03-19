@@ -6,7 +6,7 @@
 /*   By: salatiel <salatiel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/07 22:54:48 by salatiel          #+#    #+#             */
-/*   Updated: 2023/03/18 14:37:42 by salatiel         ###   ########.fr       */
+/*   Updated: 2023/03/19 07:43:44 by salatiel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,10 @@ typedef struct s_simulation
 	long long		time_to_sleep;
 	long long		time_to_eat;
 	int				n_times;
+	int				ensure_must_eat;
 	pthread_mutex_t	death;
 	pthread_mutex_t	print_mutex;
+	pthread_mutex_t	time_mutex;
 	pthread_mutex_t	*forks;
 	long long		start;
 }	t_simulation;
@@ -66,7 +68,8 @@ void			print_message(char *message, int id, char *color);
 void			cleanup(void);
 void			death(int id);
 bool			all_alive(void);
-bool			is_alive(int id);
-int				ft_sleep(int id);
+bool			is_alive(int i);
+int				ft_sleep(int id, bool to_eat);
+bool			eat(int id);
 
 #endif
